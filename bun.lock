@@ -40,6 +40,7 @@
       "name": "@graphbrain/core",
       "version": "0.0.0",
       "dependencies": {
+        "@helix-db/helix-db": "2.0.5",
         "postgres": "^3.4.9",
         "yaml": "^2.7.0",
         "zod": "^4.4.3",
@@ -57,6 +58,8 @@
     "@graphbrain/dashboard": ["@graphbrain/dashboard@workspace:apps/dashboard"],
 
     "@graphbrain/marketing": ["@graphbrain/marketing@workspace:apps/marketing"],
+
+    "@helix-db/helix-db": ["@helix-db/helix-db@2.0.5", "", {}, "sha512-fJKhqtS09ANA05vEtyZuj8M46ZUbhlyIhYHSe82E6JoIKs6XWPmEuJjAzpbQjGdQbdE9BtcQfqJSmr20X/TViw=="],
 
     "@types/body-parser": ["@types/body-parser@1.19.6", "", { "dependencies": { "@types/connect": "*", "@types/node": "*" } }, "sha512-HLFeCYgz89uk22N5Qg3dvGvsv46B8GLvKKo1zKG4NybA8U2DiEO3w9lqGg29t/tfLRJpJ6iQxnVw4OnB7MoM9g=="],
 

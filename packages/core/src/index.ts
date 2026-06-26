@@ -111,3 +111,87 @@ export type {
   WebhookDeps,
   WebhookResult,
 } from "./control/clerk-webhooks";
+
+// HelixDB schema + indexes + deployment (Stage 6). All lazy: importing
+// @graphbrain/core does NOT contact HelixDB. deploySchema(client) is called
+// by provisionHelixForTenant after the /health poll passes. The dynamic
+// query modules under ./helix/queries/ are the contract Stage 7's HelixEngine
+// implements against.
+export {
+  NODE_LABELS,
+  EDGE_LABELS,
+  PAGE_TO_PAGE_EDGES,
+  HAS_CHUNK_EDGE,
+  CONTAINS_EDGE,
+  PAGE_PROPERTIES,
+  CHUNK_PROPERTIES,
+  SOURCE_PROPERTIES,
+  EDGE_PROPERTIES,
+  NODE_PROPERTY_MAP,
+  propertyNames,
+  PAGE_FIELD_MAP,
+  CHUNK_FIELD_MAP,
+  SOURCE_FIELD_MAP,
+  PAGE_SNAKE_TO_CAMEL,
+  CHUNK_SNAKE_TO_CAMEL,
+  SOURCE_SNAKE_TO_CAMEL,
+} from "./helix/schema";
+export type {
+  NodeLabel,
+  PropertyDecl,
+  PropType,
+} from "./helix/schema";
+
+export {
+  DEPLOYED_INDEXES,
+  CHUNK_EMBEDDING_VECTOR_INDEX,
+  CHUNK_CONTENT_TEXT_INDEX,
+  PAGE_COMPILED_TRUTH_TEXT_INDEX,
+  PAGE_TITLE_TEXT_INDEX,
+  PAGE_SLUG_EQUALITY_INDEX,
+  PAGE_TYPE_EQUALITY_INDEX,
+  PAGE_EFFECTIVE_DATE_RANGE_INDEX,
+  PAGE_UPDATED_AT_RANGE_INDEX,
+} from "./helix/indexes";
+
+export { deploySchema } from "./helix/deploy";
+
+// Dynamic query modules (Stage 7 HelixEngine contract).
+export {
+  addPage,
+  getPageBySlug,
+  updatePage,
+  softDeletePage,
+  listPages,
+  addChunk,
+  getChunksByPage,
+  updateChunkEmbedding,
+  addSource,
+  getSource,
+  listSources,
+  addEdge,
+  getOutEdges,
+  getInEdges,
+  vectorSearchChunks,
+  textSearchPages,
+  textSearchChunks,
+  traverseFrom,
+} from "./helix/queries";
+export type {
+  AddPageParams,
+  UpdatePagePatch,
+  UpdatePageParams,
+  ListPagesParams,
+  AddChunkParams,
+  UpdateChunkEmbeddingParams,
+  AddSourceParams,
+  ListSourcesParams,
+  AddEdgeParams,
+  VectorSearchChunksParams,
+  VectorSearchHit,
+  TextSearchParams,
+  TextSearchHit,
+  TraverseDirection,
+  TraverseOptions,
+  TraversalNode,
+} from "./helix/queries";

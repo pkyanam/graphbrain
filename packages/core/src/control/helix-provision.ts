@@ -21,9 +21,11 @@
 // tests can exercise the polling loop quickly without waiting 120s.
 
 import { randomBytes } from "node:crypto";
+import { Client } from "@helix-db/helix-db";
 import type { Tenant } from "../types";
 import { provisionHelixInstance } from "./coolify";
 import { updateTenant } from "./tenants";
+import { deploySchema } from "../helix/deploy";
 
 /** Result of a successful provisioning flow. */
 export interface ProvisionResult {
@@ -95,7 +97,28 @@ export async function provisionHelixForTenant(
     );
   }
 
-  // 5. Success — caller writes url + encrypted key + appId onto the tenant.
+  // 5. Success — deploy the Phase 1 schema (indexes) onto the now-healthy
+  //    instance. This is the Stage 6 wiring: every freshly provisioned tenant
+  //    instance gets its indexes before the first query lands. deploySchema is
+  //    idempotent, so a re-provision (or a retry after a transient health
+  //    flap) is a safe no-op. On failure, fall through to the error-mark path
+  //    below so the tenant row reflects the provisioning failure.
+  try {
+    const client = new Client(url).withApiKey(apiKey);
+    await deploySchema(client);
+  } catch (err) {
+    try {
+      await updateTenant(tenant.id, { status: "error" });
+    } catch {
+      // Best-effort: don't let a control-plane DB failure mask the deploy error.
+    }
+    throw new Error(
+      `provisionHelixForTenant: deploySchema failed for tenant "${tenant.slug}" ` +
+        `(url=${url}): ${err instanceof Error ? err.message : String(err)}`,
+    );
+  }
+
+  // 6. Success — caller writes url + encrypted key + appId onto the tenant.
   return { url, apiKey, appId };
 }
 

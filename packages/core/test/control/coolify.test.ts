@@ -370,6 +370,13 @@ describe("control/helix-provision — provisionHelixForTenant", () => {
         body: { uuid: "provision-app-1", fqdn: "https://helix-test.internal" },
       }),
     );
+    // Stage 6 wiring: provisionHelixForTenant now calls deploySchema(client)
+    // after the /health poll passes, which POSTs a dynamic query to /v1/query.
+    // Mock it as a successful empty write-batch response (one var per index).
+    onRoute(
+      (req) => req.method === "POST" && req.url.endsWith("/v1/query"),
+      () => ({ status: 200, body: {} }),
+    );
   });
   afterAll(() => {
     restoreFetchStub();
