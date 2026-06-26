@@ -215,3 +215,53 @@ export type { HelixEngineOptions } from "./helix-engine";
 
 export { TenantRouter } from "./tenant";
 export type { TenantRouterOptions } from "./tenant";
+
+// AI Gateway (Stage 8) — OpenRouter provider + Triad stub + AIGateway +
+// EmbeddingService. All lazy: importing @graphbrain/core does NOT call
+// OpenRouter or validate env. The gateway is constructed at app startup
+// with the platform OpenRouterProvider; the EmbeddingService wraps it.
+export {
+  AIProviderError,
+} from "./ai/types";
+export type {
+  ChatRole,
+  ChatMessage,
+  ChatRequest,
+  ChatResponse,
+  Usage,
+  EmbedRequest,
+  EmbedResponse,
+  RerankRequest,
+  RerankResponse,
+  RerankResult,
+} from "./ai/types";
+
+export type { AIProvider } from "./ai/provider";
+
+export {
+  OpenRouterProvider,
+  toOpenRouterModelId,
+  OPENROUTER_DEFAULT_BASE_URL,
+  OPENROUTER_DEFAULT_REFERER,
+  OPENROUTER_DEFAULT_TITLE,
+} from "./ai/openrouter";
+export type { OpenRouterProviderOptions } from "./ai/openrouter";
+
+export { TriadProvider } from "./ai/triad";
+export type { TriadProviderOptions } from "./ai/triad";
+
+export {
+  AIGateway,
+  resolveChatModel,
+  resolveEmbeddingModel,
+  resolveEmbeddingDimensions,
+  DEFAULT_MAX_ATTEMPTS,
+  DEFAULT_BACKOFF_MS,
+} from "./ai/gateway";
+export type { AIGatewayOptions } from "./ai/gateway";
+
+export {
+  EmbeddingService,
+  DEFAULT_EMBED_BATCH_SIZE,
+} from "./embedding";
+export type { EmbeddingServiceOptions } from "./embedding";
