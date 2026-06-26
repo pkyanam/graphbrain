@@ -1,0 +1,14 @@
+{
+  "name": "@graphbrain/dashboard",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "echo \"dashboard dev: scaffold (stage 0)\" && exit 0",
+    "build": "echo \"dashboard build: scaffold (stage 0)\" && exit 0",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@graphbrain/core": "workspace:*"
+  }
+}

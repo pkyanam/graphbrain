@@ -1,0 +1,14 @@
+{
+  "name": "@graphbrain/marketing",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "echo \"marketing dev: scaffold (stage 0)\" && exit 0",
+    "build": "echo \"marketing build: scaffold (stage 0)\" && exit 0",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@graphbrain/core": "workspace:*"
+  }
+}

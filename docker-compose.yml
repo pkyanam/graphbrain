@@ -1,0 +1,63 @@
+# Graphbrain — local development infrastructure
+# Brings up Polygres (Postgres 16), MinIO, and a single HelixDB instance.
+# Usage: docker compose up -d   /   docker compose down
+
+services:
+  polygres:
+    image: postgres:16-alpine
+    container_name: graphbrain-polygres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: graphbrain
+      POSTGRES_PASSWORD: graphbrain
+      POSTGRES_DB: graphbrain_control
+    ports:
+      - "5432:5432"
+    volumes:
+      - polygres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U graphbrain -d graphbrain_control"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  minio:
+    image: minio/minio:latest
+    container_name: graphbrain-minio
+    restart: unless-stopped
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: graphbrain
+      MINIO_ROOT_PASSWORD: graphbrain-dev-secret
+    ports:
+      - "9000:9000"   # S3 API
+      - "9001:9001"   # Web console
+    volumes:
+      - minio-data:/data
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  helixdb:
+    image: ghcr.io/helixdb/enterprise-dev:latest
+    container_name: graphbrain-helixdb
+    restart: unless-stopped
+    environment:
+      HELIX_API_KEY: dev-key
+      HELIX_STORAGE: disk
+    ports:
+      - "8080:8080"
+    volumes:
+      - helixdb-data:/data
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8080/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  polygres-data:
+  minio-data:
+  helixdb-data:

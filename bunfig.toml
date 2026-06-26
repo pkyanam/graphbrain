@@ -1,0 +1,3 @@
+[install]
+# Use bun's lockfile; workspace resolution is automatic.
+exact = false
