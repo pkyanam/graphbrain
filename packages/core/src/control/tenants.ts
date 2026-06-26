@@ -10,6 +10,7 @@
 // `sql.json()`, which serializes it natively — NEVER `JSON.stringify` into a
 // `::jsonb` cast (postgres.js would double-encode it as a jsonb string scalar).
 
+import postgres from "postgres";
 import type { Tenant, TenantSettings, TenantTier, TenantStatus } from "../types";
 import { TenantSchema } from "../schemas";
 import { getPool, type Sql } from "./db";
@@ -185,7 +186,7 @@ export async function updateTenant(
   // status-only patch). `sql.json()` serializes the settings object natively
   // for the JSONB column (never JSON.stringify into ::jsonb — see Stage 1
   // note #2 / GBrain CLAUDE.md JSONB invariant).
-  const parts: unknown[] = [];
+  const parts: postgres.Fragment[] = [];
   if (patch.name !== undefined) parts.push(sql`name = ${patch.name}`);
   if (patch.slug !== undefined) parts.push(sql`slug = ${patch.slug}`);
   if (patch.tier !== undefined) parts.push(sql`tier = ${patch.tier}`);

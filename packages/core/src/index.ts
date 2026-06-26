@@ -52,3 +52,31 @@ export type {
   CreateTenantInput,
   UpdateTenantPatch,
 } from "./control/tenants";
+
+// Control plane (Stage 3) — Coolify integration + HelixDB provisioning +
+// AES-256-GCM encryption for tenant secrets. All lazy: importing
+// @graphbrain/core does NOT call Coolify, open a DB connection, or validate
+// env. Config is read inside each function on first use.
+export { encrypt, decrypt } from "./control/encryption";
+
+export {
+  provisionHelixInstance,
+  startInstance,
+  stopInstance,
+  deleteInstance,
+  getInstanceStatus,
+  backupInstance,
+  buildHelixComposeYaml,
+} from "./control/coolify";
+export type {
+  ProvisionedInstance,
+  InstanceStatus,
+} from "./control/coolify";
+
+export {
+  provisionHelixForTenant,
+} from "./control/helix-provision";
+export type {
+  ProvisionResult,
+  ProvisionOptions,
+} from "./control/helix-provision";
