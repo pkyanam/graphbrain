@@ -19,6 +19,7 @@
     "typescript": "^5.6.0"
   },
   "dependencies": {
+    "postgres": "^3.4.9",
     "zod": "^4.4.3"
   }
 }

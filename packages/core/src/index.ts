@@ -20,3 +20,35 @@ export {
   resolveSetting,
 } from "./config";
 export type { Config } from "./config";
+
+// Control plane (Stage 2) — Polygres pool, migrations, tenant CRUD.
+// All of these are lazy: importing @graphbrain/core does NOT open a DB
+// connection or validate env. The pool is created on first `getPool()` call.
+export {
+  getPool,
+  resetPool,
+  hasPool,
+  connectedUrl,
+  isReachable,
+  withTransaction,
+} from "./control/db";
+export type { Sql } from "./control/db";
+
+export {
+  runMigrations,
+  dropGraphbrainSchema,
+  MIGRATIONS,
+} from "./control/migrations/index";
+export type { Migration } from "./control/migrations/index";
+
+export {
+  createTenant,
+  getTenantByClerkOrg,
+  getTenantById,
+  updateTenant,
+  listTenants,
+} from "./control/tenants";
+export type {
+  CreateTenantInput,
+  UpdateTenantPatch,
+} from "./control/tenants";
