@@ -80,3 +80,34 @@ export type {
   ProvisionResult,
   ProvisionOptions,
 } from "./control/helix-provision";
+
+// Control plane (Stage 4) — Clerk Backend API client + webhook handlers.
+// All lazy: importing @graphbrain/core does NOT call Clerk, open a DB
+// connection, or validate env. Config is read inside each function on first
+// use. Webhook signature verification uses node:crypto (no Svix dep needed).
+export {
+  getOrganization,
+  listOrganizationApiKeys,
+  createApiKey,
+  revokeApiKey,
+  verifyApiKey,
+  getJwks,
+  resetJwksCache,
+} from "./control/clerk";
+export type {
+  ClerkOrganization,
+  ClerkApiKey,
+  VerifiedApiKey,
+  CreateApiKeyInput,
+  Jwks,
+} from "./control/clerk";
+
+export {
+  verifyWebhookSignature,
+  handleClerkWebhook,
+} from "./control/clerk-webhooks";
+export type {
+  ClerkWebhookEvent,
+  WebhookDeps,
+  WebhookResult,
+} from "./control/clerk-webhooks";

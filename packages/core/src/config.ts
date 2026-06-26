@@ -29,6 +29,10 @@ export const ConfigSchema = z.object({
   clerkPublishableKey: z.string().min(1, "CLERK_PUBLISHABLE_KEY is required"),
   clerkJwtIssuer: z.string().min(1, "CLERK_JWT_ISSUER is required"),
   clerkWebhookSecret: z.string().min(1, "CLERK_WEBHOOK_SECRET is required"),
+  // Clerk Backend API base URL (BAPI). Distinct from `clerkJwtIssuer` (the
+  // Frontend API / JWT issuer used for JWKS). The BAPI is conventionally
+  // `https://api.clerk.com/v1`; overridable for self-hosted instances.
+  clerkApiUrl: z.string().url("CLERK_API_URL must be a valid URL").default("https://api.clerk.com/v1"),
 
   // Coolify
   coolifyApiUrl: z.string().url("COOLIFY_API_URL must be a valid URL"),
@@ -90,6 +94,7 @@ const ENV_MAP = {
   CLERK_PUBLISHABLE_KEY: "clerkPublishableKey",
   CLERK_JWT_ISSUER: "clerkJwtIssuer",
   CLERK_WEBHOOK_SECRET: "clerkWebhookSecret",
+  CLERK_API_URL: "clerkApiUrl",
   COOLIFY_API_URL: "coolifyApiUrl",
   COOLIFY_API_TOKEN: "coolifyApiToken",
   COOLIFY_SERVER_UUID: "coolifyServerUuid",
