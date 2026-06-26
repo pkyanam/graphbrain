@@ -34,6 +34,7 @@ export type {
 export {
   addSource,
   getSource,
+  getSourceById,
   listSources,
 } from "./source-crud";
 export type {

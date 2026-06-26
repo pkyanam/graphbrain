@@ -147,16 +147,15 @@ export async function addPage(client: Client, params: AddPageParams): Promise<Pa
 
 // ─── getPageBySlug ───────────────────────────────────────────────────────────
 
-export async function getPageBySlug(client: Client, slug: string): Promise<Page> {
+export async function getPageBySlug(
+  client: Client,
+  slug: string,
+  opts?: { includeDeleted?: boolean },
+): Promise<Page> {
+  let traversal = g().nWithLabel("Page").where(Predicate.eq("slug", slug));
+  if (!opts?.includeDeleted) traversal = traversal.where(Predicate.isNull("deleted_at"));
   const batch = readBatch()
-    .varAs(
-      "page",
-      g()
-        .nWithLabel("Page")
-        .where(Predicate.eq("slug", slug))
-        .where(Predicate.isNull("deleted_at"))
-        .valueMap(PAGE_PROPS),
-    )
+    .varAs("page", traversal.valueMap(PAGE_PROPS))
     .returning(["page"]);
   const res = await sendRequest(client, batch.toDynamicRequest({ queryName: "get_page_by_slug" }));
   const row = extractOne(res, "page");

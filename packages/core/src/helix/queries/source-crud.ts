@@ -89,6 +89,25 @@ export async function addSource(client: Client, params: AddSourceParams): Promis
   return rowToSource(row);
 }
 
+// ─── getSourceById ───────────────────────────────────────────────────────────
+// Stage 7's BrainEngine.getSource(id) contract. The dev HelixDB image uses
+// numeric $id, so we resolve via NodeRef.id(Number(id)).hasLabel("Source").
+// Production ULIDs would need a string-id lookup path (see schema.ts note 4).
+
+export async function getSourceById(client: Client, id: string): Promise<Source | null> {
+  const numericId = Number(id);
+  if (!Number.isFinite(numericId)) return null;
+  const batch = readBatch()
+    .varAs(
+      "source",
+      g().n(NodeRef.id(numericId)).hasLabel("Source").valueMap(SOURCE_PROPS),
+    )
+    .returning(["source"]);
+  const res = await sendRequest(client, batch.toDynamicRequest({ queryName: "get_source_by_id" }));
+  const row = extractOne(res, "source");
+  return row ? rowToSource(row) : null;
+}
+
 // ─── getSource ───────────────────────────────────────────────────────────────
 
 export async function getSource(client: Client, name: string): Promise<Source> {

@@ -168,6 +168,7 @@ export {
   updateChunkEmbedding,
   addSource,
   getSource,
+  getSourceById,
   listSources,
   addEdge,
   getOutEdges,
@@ -195,3 +196,22 @@ export type {
   TraverseOptions,
   TraversalNode,
 } from "./helix/queries";
+
+// BrainEngine interface + HelixEngine + TenantRouter (Stage 7). All lazy:
+// importing @graphbrain/core does NOT open a HelixDB connection. The engine
+// is constructed per-tenant by TenantRouter.getEngine(tenant) on first use.
+export {
+  clampSearchLimit,
+  MAX_SEARCH_LIMIT,
+  MODE_SEARCH_LIMITS,
+} from "./engine";
+export type {
+  BrainEngine,
+  SearchOpts,
+} from "./engine";
+
+export { HelixEngine } from "./helix-engine";
+export type { HelixEngineOptions } from "./helix-engine";
+
+export { TenantRouter } from "./tenant";
+export type { TenantRouterOptions } from "./tenant";
