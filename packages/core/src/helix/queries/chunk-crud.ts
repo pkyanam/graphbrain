@@ -145,6 +145,28 @@ export async function getChunksByPage(client: Client, pageId: string): Promise<C
   return extractRows(res, "chunks").map(rowToChunk);
 }
 
+// ─── getChunkById ────────────────────────────────────────────────────────────
+
+/**
+ * Fetch a Chunk by its node id. Used by Stage 9's hybrid search to hydrate
+ * text-search chunk hits (which return chunk id + content, but not the
+ * page slug) into full Chunk objects so the page can be resolved. Throws
+ * if not found (read-side callers wrap in try/catch → null).
+ */
+export async function getChunkById(client: Client, chunkId: string): Promise<Chunk> {
+  const numericId = Number(chunkId);
+  const batch = readBatch()
+    .varAs(
+      "chunk",
+      g().n(NodeRef.id(numericId)).hasLabel("Chunk").valueMap(CHUNK_PROPS),
+    )
+    .returning(["chunk"]);
+  const res = await sendRequest(client, batch.toDynamicRequest({ queryName: "get_chunk_by_id" }));
+  const row = extractOne(res, "chunk");
+  if (!row) throw new Error(`getChunkById: no Chunk found for id="${chunkId}"`);
+  return rowToChunk(row);
+}
+
 // ─── updateChunkEmbedding ────────────────────────────────────────────────────
 
 export async function updateChunkEmbedding(

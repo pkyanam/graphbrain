@@ -29,6 +29,11 @@ import {
   MIGRATION_003_VERSION,
   MIGRATION_003_SQL,
 } from "./003_query_cache.sql";
+import {
+  MIGRATION_004_NAME,
+  MIGRATION_004_VERSION,
+  MIGRATION_004_SQL,
+} from "./004_query_cache_embedding.sql";
 
 /** A single migration entry. Add new migrations at the end; never modify existing ones. */
 export interface Migration {
@@ -42,6 +47,7 @@ export const MIGRATIONS: readonly Migration[] = [
   { version: MIGRATION_001_VERSION, name: MIGRATION_001_NAME, sql: MIGRATION_001_SQL },
   { version: MIGRATION_002_VERSION, name: MIGRATION_002_NAME, sql: MIGRATION_002_SQL },
   { version: MIGRATION_003_VERSION, name: MIGRATION_003_NAME, sql: MIGRATION_003_SQL },
+  { version: MIGRATION_004_VERSION, name: MIGRATION_004_NAME, sql: MIGRATION_004_SQL },
 ];
 
 /** Tracking table DDL. Kept inline (not a numbered migration) so it always exists first. */

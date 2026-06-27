@@ -16,10 +16,13 @@
     "test": "bun test"
   },
   "devDependencies": {
+    "@types/express": "5.0.6",
+    "express": "5.2.1",
     "typescript": "^5.6.0"
   },
   "dependencies": {
     "@helix-db/helix-db": "2.0.5",
+    "@modelcontextprotocol/sdk": "1.29.0",
     "postgres": "^3.4.9",
     "yaml": "^2.7.0",
     "zod": "^4.4.3"

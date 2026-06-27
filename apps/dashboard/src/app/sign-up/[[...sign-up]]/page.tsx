@@ -1,0 +1,11 @@
+// Clerk SignUp page — centered layout.
+
+import { SignUp } from "@clerk/nextjs";
+
+export default function SignUpPage(): React.JSX.Element {
+  return (
+    <div className="flex min-h-screen items-center justify-center px-4">
+      <SignUp />
+    </div>
+  );
+}

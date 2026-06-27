@@ -41,11 +41,13 @@ import type {
 import {
   addPage,
   getPageBySlug,
+  getPageById,
   updatePage,
   softDeletePage,
   listPages,
   addChunk,
   getChunksByPage,
+  getChunkById,
   updateChunkEmbedding,
   addSource,
   getSource,
@@ -130,6 +132,14 @@ export class HelixEngine implements BrainEngine {
     }
   }
 
+  async getPageById(id: string, opts?: { includeDeleted?: boolean }): Promise<Page | null> {
+    try {
+      return await getPageById(this.client, id, { includeDeleted: opts?.includeDeleted });
+    } catch {
+      return null;
+    }
+  }
+
   async listPages(opts?: SearchOpts & { offset?: number }): Promise<Page[]> {
     return listPages(this.client, {
       type: opts?.typeFilter,
@@ -208,6 +218,14 @@ export class HelixEngine implements BrainEngine {
     const page = await this.getPage(slug);
     if (!page) return [];
     return getChunksByPage(this.client, page.id);
+  }
+
+  async getChunkById(id: string): Promise<Chunk | null> {
+    try {
+      return await getChunkById(this.client, id);
+    } catch {
+      return null;
+    }
   }
 
   async updateChunkEmbedding(

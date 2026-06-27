@@ -4,11 +4,26 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "echo \"dashboard dev: scaffold (stage 0)\" && exit 0",
-    "build": "echo \"dashboard build: scaffold (stage 0)\" && exit 0",
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@graphbrain/core": "workspace:*"
+    "@clerk/nextjs": "7.5.9",
+    "@graphbrain/core": "workspace:*",
+    "next": "16.2.9",
+    "react": "19.2.7",
+    "react-dom": "19.2.7",
+    "server-only": "^0.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "^26.0.1",
+    "@types/react": "19.2.17",
+    "@types/react-dom": "19.2.3",
+    "autoprefixer": "10.5.2",
+    "postcss": "8.5.15",
+    "tailwindcss": "3.4.19",
+    "typescript": "^5.6.0"
   }
 }

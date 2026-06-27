@@ -8,6 +8,7 @@
 export {
   addPage,
   getPageBySlug,
+  getPageById,
   updatePage,
   softDeletePage,
   listPages,
@@ -23,6 +24,7 @@ export type {
 export {
   addChunk,
   getChunksByPage,
+  getChunkById,
   updateChunkEmbedding,
 } from "./chunk-crud";
 export type {

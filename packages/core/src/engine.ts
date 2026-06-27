@@ -129,6 +129,9 @@ export interface BrainEngine {
   /** Fetch a page by slug. Returns null if not found (or soft-deleted, unless
    *  `opts.includeDeleted` is set). */
   getPage(slug: string, opts?: { includeDeleted?: boolean }): Promise<Page | null>;
+  /** Fetch a page by node id. Returns null if not found. Used by Stage 9's
+   *  hybrid search to hydrate vector-search hits (which return pageId). */
+  getPageById(id: string, opts?: { includeDeleted?: boolean }): Promise<Page | null>;
   /** List pages, optionally filtered by type. Not clamped (bulk read). */
   listPages(opts?: SearchOpts & { offset?: number }): Promise<Page[]>;
   /** Insert or update a page (upsert by slug). Checks existence first, then
@@ -161,6 +164,9 @@ export interface BrainEngine {
    *  chunks (or the page itself is missing — caller should getPage first if
    *  it needs to distinguish). */
   getChunksByPage(slug: string): Promise<Chunk[]>;
+  /** Fetch a chunk by node id. Returns null if not found. Used by Stage 9's
+   *  hybrid search to hydrate text-search chunk hits (which return chunk id). */
+  getChunkById(id: string): Promise<Chunk | null>;
   /** Overwrite a chunk's embedding vector. Throws if the chunk id is not found. */
   updateChunkEmbedding(chunkId: string, embedding: number[], model?: string | null): Promise<Chunk>;
 

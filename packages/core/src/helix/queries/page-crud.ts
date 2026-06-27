@@ -163,6 +163,30 @@ export async function getPageBySlug(
   return rowToPage(row);
 }
 
+// ─── getPageById ─────────────────────────────────────────────────────────────
+
+/**
+ * Fetch a Page by its node id. Used by Stage 9's hybrid search to hydrate
+ * vector-search hits (which return pageId, not slug) into full Page objects.
+ * Throws if not found (read-side callers wrap in try/catch → null).
+ */
+export async function getPageById(
+  client: Client,
+  id: string,
+  opts?: { includeDeleted?: boolean },
+): Promise<Page> {
+  const numericId = Number(id);
+  let traversal = g().n(NodeRef.id(numericId)).hasLabel("Page");
+  if (!opts?.includeDeleted) traversal = traversal.where(Predicate.isNull("deleted_at"));
+  const batch = readBatch()
+    .varAs("page", traversal.valueMap(PAGE_PROPS))
+    .returning(["page"]);
+  const res = await sendRequest(client, batch.toDynamicRequest({ queryName: "get_page_by_id" }));
+  const row = extractOne(res, "page");
+  if (!row) throw new Error(`getPageById: no Page found for id="${id}"`);
+  return rowToPage(row);
+}
+
 // ─── updatePage ──────────────────────────────────────────────────────────────
 
 export async function updatePage(client: Client, params: UpdatePageParams): Promise<Page> {

@@ -160,11 +160,13 @@ export { deploySchema } from "./helix/deploy";
 export {
   addPage,
   getPageBySlug,
+  getPageById,
   updatePage,
   softDeletePage,
   listPages,
   addChunk,
   getChunksByPage,
+  getChunkById,
   updateChunkEmbedding,
   addSource,
   getSource,
@@ -265,3 +267,211 @@ export {
   DEFAULT_EMBED_BATCH_SIZE,
 } from "./embedding";
 export type { EmbeddingServiceOptions } from "./embedding";
+
+// Hybrid search pipeline (Stage 9) — intent classifier, mode bundles,
+// expansion, rerank, graph signals, relational recall, token budget, dedup,
+// query cache, and the hybridSearch orchestrator. All lazy: importing
+// @graphbrain/core does NOT open a DB connection or call OpenRouter. The
+// query cache uses the Polygres pool (created on first getPool() call); the
+// expansion + rerank call the AIGateway (constructed at app startup).
+export {
+  classifyIntent,
+  intentToDetail,
+  classifyQuery,
+} from "./search/intent";
+export type {
+  DetailSuggestion,
+  IntentClassification,
+} from "./search/intent";
+
+export {
+  weightsForIntent,
+  effectiveRrfK,
+  applyExactMatchBoost,
+} from "./search/intent-weights";
+export type { IntentWeights } from "./search/intent-weights";
+
+export {
+  MODE_BUNDLES,
+  KNOBS_HASH_VERSION,
+  knobsHash,
+} from "./search/mode";
+export type {
+  ModeBundle,
+  KnobsHashContext,
+} from "./search/mode";
+
+export {
+  expandQuery,
+  sanitizeQueryForPrompt,
+  sanitizeExpansionOutput,
+} from "./search/expansion";
+
+export {
+  applyReranker,
+  DEFAULT_RERANK_MODEL,
+} from "./search/rerank";
+export type { RerankerOpts } from "./search/rerank";
+
+export {
+  applyGraphSignals,
+  sessionPrefix,
+  ADJACENCY_BOOST,
+  DEFAULT_TOP_K,
+  ADJACENCY_MIN_HITS,
+  SESSION_DEMOTE,
+  SESSION_MIN_SHARE,
+} from "./search/graph-signals";
+export type {
+  GraphSignalsMeta,
+  GraphSignalsOpts,
+} from "./search/graph-signals";
+
+export {
+  buildRelationalArm,
+  parseRelationalQuery,
+  slugifySeed,
+  KNOWN_LINK_TYPES,
+} from "./search/relational-recall";
+export type {
+  RelationalArmMeta,
+  RelationalArmOpts,
+  RelationalQuery,
+  RelationalKind,
+  RelationDirection,
+} from "./search/relational-recall";
+
+export {
+  dedupResults,
+} from "./search/dedup";
+
+export {
+  enforceTokenBudget,
+  estimateTokens,
+  resultTokens,
+} from "./search/token-budget";
+export type { TokenBudgetMeta } from "./search/token-budget";
+
+export {
+  SemanticQueryCache,
+  queryHash,
+  cosineSimilarity,
+  DEFAULT_SIMILARITY_THRESHOLD,
+  DEFAULT_TTL_SECONDS,
+} from "./search/query-cache";
+export type {
+  CacheLookupResult,
+  QueryCacheConfig,
+} from "./search/query-cache";
+
+export {
+  hybridSearch,
+  RRF_K,
+  DEFAULT_RERANKER_TOP_N_IN,
+} from "./search/hybrid";
+export type {
+  HybridSearchOpts,
+  HybridSearchResult,
+} from "./search/hybrid";
+
+// Operations layer (Stage 10) — the contract-first operation registry +
+// dispatcher. The single `OPERATIONS` map (name → Operation) is the source
+// of truth for the API (Stage 12), CLI (Stage 15), and MCP server (Stage 11).
+// `dispatch(name, input, ctx, deps)` is the single entry point. The trust
+// boundary (ctx.remote !== false gates write/admin ops) is enforced in the
+// dispatcher. All lazy: importing @graphbrain/core does NOT resolve an engine
+// or call any AI provider — that happens at dispatch time.
+export {
+  OPERATIONS,
+  OPERATION_NAMES,
+  getOperation,
+  dispatch,
+  enforceTrustBoundary,
+  OperationError,
+  hasScope,
+} from "./operations";
+export type {
+  Operation,
+  OperationScope,
+  ErrorCode,
+  ResolvedDeps,
+  DispatchDeps,
+} from "./operations";
+
+// Individual operation definitions (for per-op testing + direct handler use).
+export { searchOp, queryOp } from "./operations";
+export type {
+  SearchInput,
+  SearchOutput,
+  QueryInput,
+  QueryOutput,
+  QueryCitation,
+} from "./operations";
+export {
+  DEFAULT_SYNTHESIS_SYSTEM_PROMPT,
+  buildSynthesisMessages,
+  extractUsedCitations,
+} from "./operations";
+export {
+  getPageOp,
+  listPagesOp,
+  putPageOp,
+  createPageOp,
+  addChunkOp,
+  chunkContent,
+  splitFrontmatter,
+  CHUNK_TARGET_CHARS,
+  CHUNK_MAX_CHARS,
+} from "./operations";
+export type {
+  GetPageInput,
+  GetPageOutput,
+  ListPagesInput,
+  ListPagesOutput,
+  PutPageInput,
+  PutPageOutput,
+  CreatePageInput,
+  CreatePageOutput,
+  AddChunkInput,
+  AddChunkOutput,
+} from "./operations";
+export { listSourcesOp, getSourceOp, addSourceOp } from "./operations";
+export type {
+  ListSourcesInput,
+  ListSourcesOutput,
+  GetSourceInput,
+  GetSourceOutput,
+  AddSourceInput,
+  AddSourceOutput,
+} from "./operations";
+export { getLinksOp, getBacklinksOp, addLinkOp } from "./operations";
+export type {
+  GetLinksInput,
+  GetLinksOutput,
+  GetBacklinksInput,
+  GetBacklinksOutput,
+  AddLinkInput,
+  AddLinkOutput,
+} from "./operations";
+export { captureOp, inferCaptureType, generateCaptureSlug } from "./operations";
+export type { CaptureInput, CaptureOutput } from "./operations";
+
+// MCP server layer (Stage 11) — exposes the Phase 1 operations as MCP tools
+// over stdio (local agents) + HTTP (remote agents with Clerk auth). The tool
+// list is auto-generated from OPERATIONS — adding ops in Stage 10
+// automatically extends MCP. No manual tool registration.
+//   • generateToolDefs() — the MCP tool-def seam (used by both transports).
+//   • handleMcpCall() — the MCP tool-call → operations.dispatch seam.
+//   • startMcpServer() — the stdio transport (Stage 15's CLI `serve`).
+//   • createMcpHttpHandler() — the HTTP transport (Stage 12 mounts at /mcp).
+// All lazy: importing @graphbrain/core does NOT start an MCP server or open
+// a DB connection — the transports are constructed explicitly by the CLI /
+// API service.
+export { generateToolDefs } from "./mcp/tool-defs";
+export type { McpToolDef } from "./mcp/tool-defs";
+export { handleMcpCall } from "./mcp/dispatch";
+export type { ToolResult } from "./mcp/dispatch";
+export { startMcpServer } from "./mcp/server";
+export type { StartMcpServerOptions } from "./mcp/server";
+export { createMcpHttpHandler } from "./mcp/http-server";
+export type { McpExpressRequest } from "./mcp/http-server";
