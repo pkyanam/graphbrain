@@ -149,7 +149,7 @@ import {
   EmbeddingService,
   OpenRouterProvider,
   getConfig,
-  getTenantBySlug, // from @graphbrain/core control plane
+  getTenantById, // from @graphbrain/core control plane
 } from "@graphbrain/core";
 
 const config = getConfig();
@@ -160,10 +160,10 @@ const gateway = new AIGateway({
 });
 const embeddingService = new EmbeddingService({ gateway });
 
-// Resolve the tenant this stdio server serves. Either:
-//   - load by slug from the control plane, or
-//   - construct a Tenant literal from env (local-dev HelixDB).
-const tenant = await getTenantBySlug(process.env.GRAPHBRAIN_TENANT_SLUG!);
+// Resolve the tenant this stdio server serves by its UUID primary key
+// (seeded in _graphbrain.tenants — see the sandbox setup guide).
+const tenant = await getTenantById(process.env.GRAPHBRAIN_TENANT_ID!);
+if (!tenant) throw new Error(`tenant not found: ${process.env.GRAPHBRAIN_TENANT_ID}`);
 
 await startMcpServer(
   { router, gateway, embeddingService },
@@ -180,7 +180,7 @@ Then wire it into your MCP client config:
       "command": "bun",
       "args": ["run", "/path/to/graphbrain/mcp-stdio.ts"],
       "env": {
-        "GRAPHBRAIN_TENANT_SLUG": "<your-org-slug>",
+        "GRAPHBRAIN_TENANT_ID": "<tenant-uuid>",
         "ENCRYPTION_KEY": "<base64 32-byte key>",
         "OPENROUTER_API_KEY": "<key>",
         "POLYGRES_DATABASE_URL": "postgres://graphbrain:graphbrain@localhost:5432/graphbrain_control",
